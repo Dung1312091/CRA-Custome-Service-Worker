@@ -1,24 +1,45 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {useEffect, useState} from 'react';
 import './App.css';
 
 function App() {
+  const [posts, setPost] = useState([]);
+  function getPost() {
+    fetch('https://jsonplaceholder.typicode.com/posts')
+    .then(response => response.json())
+    .then(json => setPost(json))
+  }
+  useEffect(()=> {
+    getPost();
+  },[])
+
+  function createPost() {
+    fetch('https://jsonplaceholder.typicode.com/posts', {
+    method: 'POST',
+    body: JSON.stringify({
+      title: 'Dung',
+      body: 'Dung deptrai',
+      userId: 1
+    }),
+    headers: {
+      "Content-type": "application/json; charset=UTF-8"
+    }
+  })
+  .then(response => response.json())
+  .then(json => setPost(posts => [...posts, json]))
+  }
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <button onClick={createPost}>Create Post</button>
+     {posts.map((post)=>{
+       return(
+         <div key={post.id} style={{border: "1px solid red", padding: 5, margin: 20}}>
+     <p>userId: {post.userId}</p>
+     <p>id: {post.id}</p>
+     <p>title: {post.title}</p>
+     <p>body: {post.body}</p>
+         </div>
+       )
+     })}
     </div>
   );
 }
